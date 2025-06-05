@@ -1,0 +1,29 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- name: azureSubscription
+  value: ''
+- name: resourceGroup
+  value: ''
+- name: webAppName
+  value: ''
+- name: location
+  value: 'eastus'
+
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: $(azureSubscription)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az deployment group create \
+        --resource-group $(resourceGroup) \
+        --template-file bicep/webapp.bicep \
+        --parameters @bicep/webapp.bicepparam \
+        --parameters webAppName=$(webAppName) location=$(location)
+  displayName: 'Deploy web app using Bicep'
